@@ -52,11 +52,15 @@
 #include "filters/mitchell.h"
 #include "filters/sinc.h"
 #include "filters/triangle.h"
+#include "integrators/ao.h"
 #include "integrators/bdpt.h"
+#include "integrators/bkintegrator.h"
+#include "integrators/bkintegrator_train.h"
 #include "integrators/directlighting.h"
 #include "integrators/mlt.h"
 #include "integrators/ao.h"
 #include "integrators/path.h"
+#include "integrators/position.h"
 #include "integrators/sppm.h"
 #include "integrators/volpath.h"
 #include "integrators/whitted.h"
@@ -81,6 +85,8 @@
 #include "materials/subsurface.h"
 #include "materials/translucent.h"
 #include "materials/uber.h"
+#include "media/grid.h"
+#include "media/homogeneous.h"
 #include "samplers/halton.h"
 #include "samplers/maxmin.h"
 #include "samplers/random.h"
@@ -96,9 +102,9 @@
 #include "shapes/loopsubdiv.h"
 #include "shapes/nurbs.h"
 #include "shapes/paraboloid.h"
+#include "shapes/plymesh.h"
 #include "shapes/sphere.h"
 #include "shapes/triangle.h"
-#include "shapes/plymesh.h"
 #include "textures/bilerp.h"
 #include "textures/checkerboard.h"
 #include "textures/constant.h"
@@ -112,11 +118,10 @@
 #include "textures/uv.h"
 #include "textures/windy.h"
 #include "textures/wrinkled.h"
-#include "media/grid.h"
-#include "media/homogeneous.h"
 
-#include <map>
+#include <integrators/bkintegrator_train.h>
 #include <stdio.h>
+#include <map>
 
 namespace pbrt {
 
@@ -1695,6 +1700,12 @@ Integrator *RenderOptions::MakeIntegrator() const {
         integrator = CreateAOIntegrator(IntegratorParams, sampler, camera);
     } else if (IntegratorName == "sppm") {
         integrator = CreateSPPMIntegrator(IntegratorParams, camera);
+    } else if (IntegratorName == "bk") {
+        integrator = CreateBkIntegrator(IntegratorParams, sampler, camera);
+    } else if (IntegratorName == "bktrain") {
+        integrator = CreateBkTrainIntegrator(IntegratorParams, sampler, camera);
+    } else if (IntegratorName == "position") {
+        integrator = CreatePositionIntegrator(IntegratorParams, sampler, camera);
     } else {
         Error("Integrator \"%s\" unknown.", IntegratorName.c_str());
         return nullptr;
