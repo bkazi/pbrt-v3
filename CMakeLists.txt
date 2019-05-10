@@ -2,7 +2,7 @@
 # (https://www.slideshare.net/DanielPfeifer1/cmake-48475415) are violated
 # in this file. Would be nice to address some of these.
 
-CMAKE_MINIMUM_REQUIRED ( VERSION 2.8.4 )
+CMAKE_MINIMUM_REQUIRED ( VERSION 3.10 )
 
 # For sanitizers
 SET (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -364,6 +364,16 @@ SET_PROPERTY(TARGET Ptex_static ptxinfo halftest ftest rtest wtest PROPERTY FOLD
 INCLUDE_DIRECTORIES ( src/ext/ptex/src/ptex )
 
 ###########################################################################
+# Tensorflow
+
+FIND_PACKAGE ( TensorFlow REQUIRED )
+
+TensorFlow_REQUIRE_C_LIBRARY()
+TensorFlow_REQUIRE_SOURCE()
+
+INCLUDE_DIRECTORIES ( ${TensorFlow_INCLUDE_DIR} ${TENSORFLOW_SOURCE_DIR} )
+
+###########################################################################
 # On to pbrt...
 
 SET ( PBRT_CORE_SOURCE
@@ -524,7 +534,7 @@ ADD_SANITIZERS ( pbrt_exe )
 
 SET_TARGET_PROPERTIES ( pbrt_exe PROPERTIES OUTPUT_NAME pbrt )
 TARGET_COMPILE_FEATURES ( pbrt_exe PRIVATE ${PBRT_CXX11_FEATURES} )
-TARGET_LINK_LIBRARIES ( pbrt_exe ${ALL_PBRT_LIBS} )
+TARGET_LINK_LIBRARIES ( pbrt_exe ${ALL_PBRT_LIBS} TensorFlow_DEP )
 
 # Tools
 ADD_EXECUTABLE ( bsdftest src/tools/bsdftest.cpp )
